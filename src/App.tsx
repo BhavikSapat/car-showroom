@@ -1,32 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { ToastProvider } from './components/common/Toast';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import { AppLayout } from './components/layout/AppLayout';
-import { PageId } from './components/layout/Sidebar';
-import { DashboardPage } from './pages/DashboardPage';
-import { CustomersPage } from './pages/CustomersPage';
-import { CarsModule } from './components/cars/CarsModule';
-import { CarCustomerRelationshipModule } from './components/relationships/CarCustomerRelationshipModule';
-import { AdvancedQueries } from './components/queries/AdvancedQueries';
-import { UserManagement } from './components/users/UserManagement';
-import { ProfilePage } from './pages/ProfilePage';
-import { LoginPage } from './pages/LoginPage';
-import { LandingPage } from './components/landing/LandingPage';
-import { ErrorState } from './components/common/ErrorState';
-import { LoadingSpinner } from './components/common/LoadingSpinner';
+import React, { useState, useEffect } from "react";
+import { ToastProvider } from "./components/common/Toast";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import { AppLayout } from "./components/layout/AppLayout";
+import { PageId } from "./components/layout/Sidebar";
+import { DashboardPage } from "./pages/DashboardPage";
+import { CustomersPage } from "./pages/CustomersPage";
+import { CarsModule } from "./components/cars/CarsModule";
+import { CarCustomerRelationshipModule } from "./components/relationships/CarCustomerRelationshipModule";
+import { AdvancedQueries } from "./components/queries/AdvancedQueries";
+import { UserManagement } from "./components/users/UserManagement";
+import { ProfilePage } from "./pages/ProfilePage";
+import { LoginPage } from "./pages/LoginPage";
+import { LandingPage } from "./components/landing/LandingPage";
+import { ErrorState } from "./components/common/ErrorState";
+import { LoadingSpinner } from "./components/common/LoadingSpinner";
 
-const MainApp: React.FC<{ onReturnToLanding: () => void }> = ({ onReturnToLanding }) => {
+const MainApp: React.FC<{ onReturnToLanding: () => void }> = ({
+  onReturnToLanding,
+}) => {
   const { isAuthenticated, isLoading, role } = useAuth();
   const [currentPage, setCurrentPage] = useState<PageId>(() => {
-    return role === 'MANAGER' ? 'cars' : 'dashboard';
+    return role === "MANAGER" ? "cars" : "dashboard";
   });
 
   // Adjust default page based on user role when auth resolves
   useEffect(() => {
-    if (role === 'MANAGER' && (currentPage === 'dashboard')) {
-      setCurrentPage('cars');
-    } else if (role === 'OWNER' && (!currentPage)) {
-      setCurrentPage('dashboard');
+    if (role === "MANAGER" && currentPage === "dashboard") {
+      setCurrentPage("cars");
+    } else if (role === "OWNER" && !currentPage) {
+      setCurrentPage("dashboard");
     }
   }, [role]);
 
@@ -41,9 +43,16 @@ const MainApp: React.FC<{ onReturnToLanding: () => void }> = ({ onReturnToLandin
   // Role Protection check
   const isPageAllowed = (page: PageId): boolean => {
     if (!role) return false;
-    if (role === 'OWNER') return true;
-    if (role === 'MANAGER') {
-      return ['cars', 'customers', 'relationships', 'queries', 'profile', 'users'].includes(page);
+    if (role === "OWNER") return true;
+    if (role === "MANAGER") {
+      return [
+        "cars",
+        "customers",
+        "relationships",
+        "queries",
+        "profile",
+        "users",
+      ].includes(page);
     }
     return false;
   };
@@ -54,28 +63,30 @@ const MainApp: React.FC<{ onReturnToLanding: () => void }> = ({ onReturnToLandin
         <ErrorState
           code={403}
           message={`Access Denied! The ${role} role is not permitted to access the ${currentPage} page.`}
-          onBack={() => setCurrentPage(role === 'MANAGER' ? 'cars' : 'dashboard')}
+          onBack={() =>
+            setCurrentPage(role === "MANAGER" ? "cars" : "dashboard")
+          }
         />
       );
     }
 
     switch (currentPage) {
-      case 'dashboard':
-        return <DashboardPage />;
-      case 'customers':
+      case "dashboard":
+        return <DashboardPage onNavigate={setCurrentPage} />;
+      case "customers":
         return <CustomersPage />;
-      case 'cars':
+      case "cars":
         return <CarsModule />;
-      case 'relationships':
+      case "relationships":
         return <CarCustomerRelationshipModule />;
-      case 'queries':
+      case "queries":
         return <AdvancedQueries />;
-      case 'users':
+      case "users":
         return <UserManagement />;
-      case 'profile':
+      case "profile":
         return <ProfilePage />;
       default:
-        return role === 'MANAGER' ? <CarsModule /> : <DashboardPage />;
+        return role === "MANAGER" ? <CarsModule /> : <DashboardPage />;
     }
   };
 
@@ -101,4 +112,3 @@ export default function App() {
     </ToastProvider>
   );
 }
-
