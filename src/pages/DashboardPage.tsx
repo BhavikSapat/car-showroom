@@ -347,7 +347,13 @@ export const DashboardPage: React.FC<{
         </div>
 
         <div className="w-full h-[280px]">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer
+            width="100%"
+            height="100%"
+            tabIndex={-1}
+            className="outline-none focus:outline-none"
+            accessibilityLayer={false}
+          >
             <BarChart
               data={chartData}
               layout="vertical"
@@ -358,8 +364,25 @@ export const DashboardPage: React.FC<{
                 bottom: 5,
               }}
               barCategoryGap="25%"
+              accessibilityLayer={false}
+              tabIndex={-1}
+              style={{ outline: "none" }}
+              onMouseDown={(e) => {
+                e.currentTarget.blur();
+              }}
+              onMouseUp={(e) => {
+                e.currentTarget.blur();
+              }}
+              onClick={(e) => {
+                e.currentTarget.blur();
+              }}
             >
-              <CartesianGrid horizontal={false} stroke="#E4E4E7" />
+              <CartesianGrid
+                horizontal={false}
+                stroke="#E4E4E7"
+                tabIndex={-1}
+                className="outline-none focus:outline-none"
+              />
 
               <XAxis
                 type="number"
@@ -404,6 +427,8 @@ export const DashboardPage: React.FC<{
                 fill="#18181B"
                 radius={[0, 4, 4, 0]}
                 maxBarSize={28}
+                tabIndex={-1}
+                className="outline-none focus:outline-none"
               >
                 <LabelList
                   dataKey="value"
