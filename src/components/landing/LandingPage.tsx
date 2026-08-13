@@ -32,8 +32,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchWebApp }) => {
 
   const triggerDownloadAction = () => {
     const link = document.createElement("a");
-    link.href = "http://localhost:3000/downloads/png.png";
-    link.download = "png.png";
+
+    link.href =
+      "https://github.com/BhavikSapat/car-showroom/releases/download/v1.0.0/GTAutos-Setup.exe";
+
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -193,7 +198,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchWebApp }) => {
               </h3>
             </div>
             <p className="text-xs text-[#666666] mt-1 leading-relaxed">
-              Standalone Desktop Edition for Windows & macOS. <br />
+              Standalone Desktop Edition for Windows. <br />
               Enjoy offline access and direct hardware scanner synchronization.
             </p>
             <p className="text-xs text-[#666666]-80 mt-1 leading-relaxed">
