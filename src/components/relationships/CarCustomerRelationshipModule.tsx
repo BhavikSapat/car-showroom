@@ -719,7 +719,7 @@ export const CarCustomerRelationshipModule: React.FC = () => {
           </div> */}
 
           {/* Booking Date Input */}
-          <div>
+          {/* <div>
             <label className="block text-xs font-semibold text-[#18181B] mb-1">
               Booking Date *
             </label>
@@ -736,7 +736,7 @@ export const CarCustomerRelationshipModule: React.FC = () => {
 
               <Calendar className="w-3.5 h-3.5 text-[#71717A] absolute left-2.5 top-2.5" />
             </div>
-          </div>
+          </div> */}
 
           {/* Marketing Preference Dropdown */}
           {/*
