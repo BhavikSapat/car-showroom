@@ -344,11 +344,11 @@ export const ServiceRecordsModule: React.FC = () => {
                   const isDone = s.status === "COMPLETED";
                   return (
                     <tr
-                      key={s.id || idx}
+                      key={idx}
                       className="hover:bg-[#F9FAFB] transition-colors"
                     >
                       <td className="px-5 py-3.5 text-xs text-slate-500 font-mono">
-                        {s.id}
+                        {idx + 1}
                       </td>
                       <td className="px-5 py-3.5 text-xs">
                         <div className="font-bold text-slate-900 flex items-center gap-1.5">

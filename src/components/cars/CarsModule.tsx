@@ -773,14 +773,16 @@ export const CarsModule: React.FC = () => {
                 {filteredCars.map((car, idx) => {
                   const isAvailable =
                     (car.quantity || 0) > 0 && car.status !== "OUT_OF_STOCK";
+
                   return (
                     <tr
-                      key={car.id || idx}
+                      key={idx}
                       className="hover:bg-[#F9FAFB] transition-colors"
                     >
                       <td className="px-5 py-3.5 text-xs text-slate-700 font-mono font-medium">
-                        {car.id}
+                        {idx + 1}
                       </td>
+
                       <td className="px-5 py-3.5 font-bold text-[#18181B]">
                         <span className="inline-block px-2.5 py-0.5 rounded text-xs font-bold border bg-[#F4F4F5] text-[#18181B] border-[#E4E4E7]">
                           {car.company}

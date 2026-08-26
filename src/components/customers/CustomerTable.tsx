@@ -80,10 +80,10 @@ export const CustomerTable: React.FC<CustomerTableProps> = ({
             </tr>
           </thead>
           <tbody className="divide-y divide-[#F4F4F5] text-sm">
-            {customers.map((c) => (
+            {customers.map((c, key) => (
               <tr key={c.id} className="hover:bg-[#F9FAFB] transition-colors">
                 <td className="px-6 py-4 font-mono text-xs text-[#71717A]">
-                  {c.id}
+                  {key + 1}
                 </td>
                 <td className="px-6 py-4 font-medium text-[#18181B]">
                   <div className="flex items-center gap-2.5">

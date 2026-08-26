@@ -255,14 +255,14 @@ export const UserManagement: React.FC = () => {
               </thead>
 
               <tbody className="divide-y divide-[#F4F4F5] text-sm">
-                {users.map((u) => (
+                {users.map((u, idx) => (
                   <tr
-                    key={u.id}
+                    key={idx}
                     className="hover:bg-[#F9FAFB] transition-colors"
                   >
                     {/* Account ID */}
                     <td className="px-6 py-4 font-mono text-xs text-[#71717A]">
-                      {u.id}
+                      {idx + 1}
                     </td>
 
                     {/* Username / Identity */}
