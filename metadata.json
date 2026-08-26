@@ -1,0 +1,8 @@
+{
+  "name": "CS v2",
+  "description": "Enterprise CRM frontend for Car Showroom with Spring Boot backend API integration, RBAC, customer management, and queries.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
