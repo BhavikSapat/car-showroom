@@ -35,7 +35,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchWebApp }) => {
     const link = document.createElement("a");
 
     link.href =
-      "https://github.com/BhavikSapat/car-showroom/releases/download/v1.0.3/GTAutos-Setup.exe";
+      "https://github.com/BhavikSapat/car-showroom/releases/download/v1.0.4/GTAutos-Setup.exe";
 
     link.target = "_blank";
     link.rel = "noopener noreferrer";
