@@ -209,8 +209,7 @@ export const UserManagement: React.FC = () => {
           </h3>
 
           <p className="text-xs text-[#71717A] mt-0.5">
-            Manage registered system accounts with MANAGER and OWNER access
-            roles.
+            Manage registered system accounts.
           </p>
         </div>
 
@@ -221,7 +220,7 @@ export const UserManagement: React.FC = () => {
         >
           <UserPlus className="w-4 h-4" />
 
-          <span>Register New Account</span>
+          <span>Register New Manager</span>
         </button>
       </div>
 
@@ -237,7 +236,7 @@ export const UserManagement: React.FC = () => {
               onClick={() => setIsRegisterModalOpen(true)}
               className="text-xs font-semibold text-black underline hover:text-[#27272A] cursor-pointer"
             >
-              Click here to register a new account
+              Click here to register a new manager
             </button>
           </div>
         ) : (
@@ -301,14 +300,16 @@ export const UserManagement: React.FC = () => {
                     </td>
 
                     {/* Actions */}
-                    <td className="px-6 py-4 text-right">
-                      <button
-                        onClick={() => handleDeleteUser(u)}
-                        className="text-[10px] border px-2.5 py-1 rounded border-red-200 text-red-600 hover:bg-red-50 font-medium transition-colors cursor-pointer"
-                      >
-                        Delete
-                      </button>
-                    </td>
+                    {u.role !== "OWNER" && (
+                      <td className="px-6 py-4 text-right">
+                        <button
+                          onClick={() => handleDeleteUser(u)}
+                          className="text-[10px] border px-2.5 py-1 rounded border-red-200 text-red-600 hover:bg-red-50 font-medium transition-colors cursor-pointer"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -407,7 +408,7 @@ export const UserManagement: React.FC = () => {
             >
               <option value="MANAGER">MANAGER</option>
 
-              <option value="OWNER">OWNER</option>
+              {/* <option value="OWNER">OWNER</option> */}
             </select>
           </div>
 
@@ -431,10 +432,10 @@ export const UserManagement: React.FC = () => {
                 <div className="flex items-center gap-1.5">
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
 
-                  <span>Creating Account...</span>
+                  <span>Creating Manager...</span>
                 </div>
               ) : (
-                <span>Register Account</span>
+                <span>Register Manager</span>
               )}
             </button>
           </div>

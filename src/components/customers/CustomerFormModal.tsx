@@ -68,7 +68,11 @@ export const CustomerFormModal: React.FC<CustomerFormModalProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       title={initialData ? "Edit Customer" : "Add New Customer"}
-      subtitle={initialData ? `Updating customer ID ${initialData.id}` : "Register customer in showroom database"}
+      subtitle={
+        initialData
+          ? `Updating customer ID ${initialData.id}`
+          : "Register customer in showroom database"
+      }
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Customer Name */}

@@ -329,12 +329,12 @@ export const ServiceRecordsModule: React.FC = () => {
             <table className="w-full text-left border-collapse">
               <thead className="bg-[#F9FAFB] text-[10px] font-semibold text-[#71717A] uppercase tracking-wider border-b border-[#E4E4E7]">
                 <tr>
-                  <th className="px-5 py-3">Ticket ID</th>
-                  <th className="px-5 py-3">Booking / Vehicle</th>
+                  <th className="px-5 py-3">Service ID</th>
+                  <th className="px-5 py-3">Customer / Vehicle</th>
                   <th className="px-5 py-3">Service Type</th>
                   <th className="px-5 py-3">Scheduled Date</th>
                   <th className="px-5 py-3">Completed Date</th>
-                  <th className="px-5 py-3">Cost ($)</th>
+                  <th className="px-5 py-3">Cost (₹)</th>
                   <th className="px-5 py-3">Status</th>
                   <th className="px-5 py-3 text-right">Actions</th>
                 </tr>
@@ -351,9 +351,11 @@ export const ServiceRecordsModule: React.FC = () => {
                         {s.id}
                       </td>
                       <td className="px-5 py-3.5 text-xs">
-                        <div className="font-bold text-slate-900">
-                          Booking {s.booking?.id || "N/A"}
+                        <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                          {/* <User className="w-3.5 h-3.5 text-slate-500" /> */}
+                          {s.booking?.customer?.name || "N/A"}
                         </div>
+
                         {s.booking?.car && (
                           <div className="text-[11px] text-slate-500 font-mono">
                             {s.booking.car.company} {s.booking.car.model}
@@ -375,7 +377,7 @@ export const ServiceRecordsModule: React.FC = () => {
                         {s.completedDate || "—"}
                       </td>
                       <td className="px-5 py-3.5 text-xs font-mono font-bold text-slate-900">
-                        ${s.cost ? Number(s.cost).toLocaleString() : "0"}
+                        ₹{s.cost ? Number(s.cost).toLocaleString() : "0"}
                       </td>
                       <td className="px-5 py-3.5 text-xs">
                         <span
@@ -603,7 +605,7 @@ export const ServiceRecordsModule: React.FC = () => {
               <div className="flex justify-between py-1">
                 <span className="text-slate-500">Cost:</span>
                 <span className="font-mono font-bold text-slate-900">
-                  $
+                  ₹
                   {viewingRecord.cost
                     ? Number(viewingRecord.cost).toLocaleString()
                     : "0"}

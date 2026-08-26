@@ -1,7 +1,13 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { User, UserRole } from '../types';
-import { authService } from '../services/authService';
-import { useToast } from '../components/common/Toast';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import { User, UserRole } from "../types";
+import { authService } from "../services/authService";
+import { useToast } from "../components/common/Toast";
 
 interface AuthContextType {
   user: User | null;
@@ -16,7 +22,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [role, setRole] = useState<UserRole | null>(null);
@@ -32,8 +40,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(null);
       setToken(null);
       setRole(null);
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('auth_user');
+      localStorage.removeItem("auth_token");
+      localStorage.removeItem("auth_user");
     }
   }, []);
 
@@ -62,22 +70,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Listen to expired token events from axios interceptor
   useEffect(() => {
     const handleExpired = (e: any) => {
-      const detail = e.detail || 'Token Expired! Please Login Again.';
-      toast.warning('Session Expired', detail);
+      const detail = e.detail || "Token Expired! Please Login Again.";
+      toast.warning("Session Expired", detail);
       handleLogout();
     };
 
     const handleUnauthorized = () => {
-      toast.error('Access Denied', 'Please log in with appropriate credentials.');
+      toast.error(
+        "Access Denied",
+        "Please log in with appropriate credentials.",
+      );
       handleLogout();
     };
 
-    window.addEventListener('auth:token_expired', handleExpired);
-    window.addEventListener('auth:unauthorized', handleUnauthorized);
+    window.addEventListener("auth:token_expired", handleExpired);
+    window.addEventListener("auth:unauthorized", handleUnauthorized);
 
     return () => {
-      window.removeEventListener('auth:token_expired', handleExpired);
-      window.removeEventListener('auth:unauthorized', handleUnauthorized);
+      window.removeEventListener("auth:token_expired", handleExpired);
+      window.removeEventListener("auth:unauthorized", handleUnauthorized);
     };
   }, [handleLogout, toast]);
 
@@ -89,11 +100,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(result.user);
         setToken(result.token);
         setRole(result.user.role);
-        toast.success('Welcome Back', `Logged in successfully as ${result.user.role}`);
+        toast.success(
+          "Welcome Back",
+          `Logged in successfully as ${result.user.role}`,
+        );
       }
     } catch (err: any) {
-      const msg = err.message || 'Login failed. Please verify credentials.';
-      toast.error('Login Failed', msg);
+      const msg = err.message || "Login failed. Please verify credentials.";
+      toast.error("Login Failed", msg);
       throw err;
     } finally {
       setIsLoading(false);
@@ -103,12 +117,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const refreshProfile = async () => {
     try {
       const profile = await authService.getProfile();
-      if (typeof profile !== 'string') {
+      if (typeof profile !== "string") {
         setUser(profile);
         setRole(profile.role);
       }
     } catch (err) {
-      console.warn('Could not refresh profile', err);
+      console.warn("Could not refresh profile", err);
     }
   };
 
@@ -133,7 +147,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

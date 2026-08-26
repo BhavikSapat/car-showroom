@@ -426,7 +426,7 @@ export const CarsModule: React.FC = () => {
       "Petrol",
       "Diesel",
       "Electric",
-      "Hybrid",
+      "CNG",
       ...cars.map((c) => c.fuelType).filter(Boolean),
     ]),
   );
@@ -817,7 +817,7 @@ export const CarsModule: React.FC = () => {
                         </div>
                       </td>
                       <td className="px-5 py-3.5 text-xs font-mono font-semibold text-slate-900">
-                        $
+                        ₹
                         {car.price ? Number(car.price).toLocaleString() : "N/A"}
                       </td>
                       <td className="px-5 py-3.5 text-xs">
@@ -834,9 +834,7 @@ export const CarsModule: React.FC = () => {
                               : "bg-rose-50 text-rose-700 border border-rose-200"
                           }`}
                         >
-                          {isAvailable
-                            ? `${car.quantity} AVAILABLE`
-                            : "OUT OF STOCK"}
+                          {isAvailable ? `AVAILABLE` : "OUT OF STOCK"}
                         </span>
                       </td>
                       <td className="px-5 py-3.5 text-right">
@@ -995,7 +993,7 @@ export const CarsModule: React.FC = () => {
                 <option value="Petrol">Petrol</option>
                 <option value="Diesel">Diesel</option>
                 <option value="Electric">Electric</option>
-                <option value="Hybrid">Hybrid</option>
+                <option value="CNG">CNG</option>
               </select>
             </div>
 
@@ -1017,7 +1015,12 @@ export const CarsModule: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+          <div
+            className={`grid grid-cols-1 sm:grid-cols-2 ${
+              !editingCar ? "md:grid-cols-3" : "md:grid-cols-2"
+            } gap-3`}
+          >
+            {/* Manufacturing Year */}
             <div>
               <label className="block text-xs font-semibold text-[#18181B] mb-1">
                 Manufacturing Year
@@ -1038,9 +1041,10 @@ export const CarsModule: React.FC = () => {
               />
             </div>
 
+            {/* Price */}
             <div>
               <label className="block text-xs font-semibold text-[#18181B] mb-1">
-                Price ($)
+                Price (₹)
               </label>
               <input
                 type="number"
@@ -1048,57 +1052,41 @@ export const CarsModule: React.FC = () => {
                 step="500"
                 value={formData.price}
                 onChange={(e) =>
-                  setFormData({ ...formData, price: Number(e.target.value) })
-                }
-                disabled={isSubmitting}
-                className="w-full px-3 py-2 text-xs text-[#18181B] bg-white border border-[#E4E4E7] rounded focus:ring-1 focus:ring-black outline-none font-mono"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-[#18181B] mb-1">
-                Quantity Stock *
-              </label>
-              <input
-                type="number"
-                min="0"
-                value={formData.quantity}
-                onChange={(e) => {
-                  const qty = Number(e.target.value);
                   setFormData({
                     ...formData,
-                    quantity: qty,
-                    status:
-                      qty > 0
-                        ? formData.status === "OUT_OF_STOCK"
-                          ? "AVAILABLE"
-                          : formData.status
-                        : "OUT_OF_STOCK",
-                  });
-                }}
+                    price: Number(e.target.value),
+                  })
+                }
                 disabled={isSubmitting}
-                required
                 className="w-full px-3 py-2 text-xs text-[#18181B] bg-white border border-[#E4E4E7] rounded focus:ring-1 focus:ring-black outline-none font-mono"
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-[#18181B] mb-1">
-                Inventory Status
-              </label>
-              <select
-                value={formData.status}
-                onChange={(e) =>
-                  setFormData({ ...formData, status: e.target.value })
-                }
-                disabled={isSubmitting}
-                className="w-full px-3 py-2 text-xs text-[#18181B] bg-white border border-[#E4E4E7] rounded focus:ring-1 focus:ring-black outline-none font-mono"
-              >
-                <option value="AVAILABLE">AVAILABLE</option>
-                <option value="OUT_OF_STOCK">OUT_OF_STOCK</option>
-                <option value="RESERVED">RESERVED</option>
-              </select>
-            </div>
+            {/* Quantity - ADD ONLY */}
+            {!editingCar && (
+              <div>
+                <label className="block text-xs font-semibold text-[#18181B] mb-1">
+                  Quantity Stock *
+                </label>
+
+                <input
+                  type="number"
+                  min="0"
+                  value={formData.quantity}
+                  onChange={(e) => {
+                    const qty = Number(e.target.value);
+
+                    setFormData({
+                      ...formData,
+                      quantity: qty,
+                    });
+                  }}
+                  disabled={isSubmitting}
+                  required
+                  className="w-full px-3 py-2 text-xs text-[#18181B] bg-white border border-[#E4E4E7] rounded focus:ring-1 focus:ring-black outline-none font-mono"
+                />
+              </div>
+            )}
           </div>
 
           <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#E4E4E7]">
@@ -1228,7 +1216,7 @@ export const CarsModule: React.FC = () => {
                 }`}
               >
                 {viewingCar.quantity && viewingCar.quantity > 0
-                  ? `${viewingCar.quantity} AVAILABLE`
+                  ? `AVAILABLE`
                   : "OUT OF STOCK"}
               </span>
             </div>
@@ -1267,7 +1255,7 @@ export const CarsModule: React.FC = () => {
               <div className="flex justify-between py-1">
                 <span className="text-slate-500">MSRP Price:</span>
                 <span className="font-mono font-bold text-slate-900">
-                  $
+                  ₹
                   {viewingCar.price
                     ? Number(viewingCar.price).toLocaleString()
                     : "N/A"}
@@ -1276,7 +1264,7 @@ export const CarsModule: React.FC = () => {
             </div>
 
             {/* Real-time availability result */}
-            <div className="p-3 bg-slate-50 rounded border border-slate-200 space-y-1">
+            {/* <div className="p-3 bg-slate-50 rounded border border-slate-200 space-y-1">
               <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider flex items-center gap-1">
                 <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Real-Time
                 Availability Check
@@ -1290,7 +1278,7 @@ export const CarsModule: React.FC = () => {
                   {availabilityMessage || "Status: " + viewingCar.status}
                 </p>
               )}
-            </div>
+            </div> */}
 
             <div className="pt-2">
               <button

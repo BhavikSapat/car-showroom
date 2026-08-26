@@ -400,7 +400,11 @@ export const customerService = {
   async getCustomers(): Promise<Customer[]> {
     try {
       const res = await this.getAllCustomers(0, 500);
-      if (typeof res === "object" && res !== null && Array.isArray(res.content)) {
+      if (
+        typeof res === "object" &&
+        res !== null &&
+        Array.isArray(res.content)
+      ) {
         return res.content;
       }
       return [];
@@ -410,10 +414,7 @@ export const customerService = {
   },
 
   // POST /customer/{customerId}/assign - Assign car model IDs to customer
-  async assignModels(
-    customerId: number,
-    modelIds: number[],
-  ): Promise<any> {
+  async assignModels(customerId: number, modelIds: number[]): Promise<any> {
     try {
       const response = await apiClient.post(
         `/customer/${customerId}/assign`,

@@ -1,5 +1,5 @@
-import { apiClient } from './api';
-import { Booking } from '../types';
+import { apiClient } from "./api";
+import { Booking } from "../types";
 
 export const bookingService = {
   // POST /booking - Create new vehicle booking (OWNER/MANAGER)
@@ -15,11 +15,11 @@ export const bookingService = {
     bookingStatus?: string;
   }): Promise<Booking | string> {
     try {
-      const response = await apiClient.post('/booking', booking);
+      const response = await apiClient.post("/booking", booking);
       return response.data;
     } catch (err: any) {
-      console.log('Create Booking Error:', err.response?.data || err.message);
-      if (err.response?.data && typeof err.response.data === 'string') {
+      console.log("Create Booking Error:", err.response?.data || err.message);
+      if (err.response?.data && typeof err.response.data === "string") {
         return err.response.data.trim();
       }
       throw err;
@@ -29,10 +29,10 @@ export const bookingService = {
   // GET /booking - Fetch all bookings (OWNER/MANAGER)
   async getAllBookings(): Promise<Booking[]> {
     try {
-      const response = await apiClient.get('/booking');
+      const response = await apiClient.get("/booking");
       return Array.isArray(response.data) ? response.data : [];
     } catch (err: any) {
-      console.log('Get Bookings Error:', err.response?.data || err.message);
+      console.log("Get Bookings Error:", err.response?.data || err.message);
       return [];
     }
   },
@@ -58,15 +58,25 @@ export const bookingService = {
   },
 
   // PUT /booking/{bookingId}/status?status={status} - Update booking status
-  async updateBookingStatus(bookingId: number, status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | string): Promise<Booking | string> {
+  async updateBookingStatus(
+    bookingId: number,
+    status: "PENDING" | "CONFIRMED" | "CANCELLED" | string,
+  ): Promise<Booking | string> {
     try {
-      const response = await apiClient.put(`/booking/${bookingId}/status`, null, {
-        params: { status },
-      });
+      const response = await apiClient.put(
+        `/booking/${bookingId}/status`,
+        null,
+        {
+          params: { status },
+        },
+      );
       return response.data;
     } catch (err: any) {
-      console.log('Update Booking Status Error:', err.response?.data || err.message);
-      if (err.response?.data && typeof err.response.data === 'string') {
+      console.log(
+        "Update Booking Status Error:",
+        err.response?.data || err.message,
+      );
+      if (err.response?.data && typeof err.response.data === "string") {
         return err.response.data.trim();
       }
       throw err;

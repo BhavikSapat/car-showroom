@@ -5,12 +5,7 @@ import { customerService } from "../services/customerService";
 import { InitialsAvatar } from "../components/common/InitialsAvatar";
 import { CustomerFormModal } from "../components/customers/CustomerFormModal";
 import { Customer } from "../types";
-import {
-  Shield,
-  LogOut,
-  Mail,
-  User as UserIcon,
-} from "lucide-react";
+import { Shield, LogOut, Mail, User as UserIcon, Star } from "lucide-react";
 import { useToast } from "../components/common/Toast";
 
 export const ProfilePage: React.FC = () => {
@@ -131,22 +126,22 @@ export const ProfilePage: React.FC = () => {
       {/* Account Profile Summary Table */}
       <div className="bg-white border border-[#E4E4E7] rounded-lg p-5 space-y-4">
         {/* <div className="flex items-center justify-between border-b border-[#E4E4E7] pb-3">
-          <div>
-            <h4 className="text-sm font-bold text-[#18181B]">
-              Account & Session Profile
-            </h4>
-            <p className="text-xs text-[#71717A] mt-0.5">
-              Verified identity parameters loaded from backend endpoint
-            </p>
-          </div>
-          <button
-            onClick={fetchProfileEndpoint}
-            className="p-1.5 text-[#71717A] hover:text-[#18181B] bg-[#F4F4F5] rounded border border-[#E4E4E7] transition-colors cursor-pointer"
-            title="Refresh Account Data"
-          >
-            <RefreshCw className="w-4 h-4" />
-          </button>
-        </div> */}
+            <div>
+              <h4 className="text-sm font-bold text-[#18181B]">
+                Account & Session Profile
+              </h4>
+              <p className="text-xs text-[#71717A] mt-0.5">
+                Verified identity parameters loaded from backend endpoint
+              </p>
+            </div>
+            <button
+              onClick={fetchProfileEndpoint}
+              className="p-1.5 text-[#71717A] hover:text-[#18181B] bg-[#F4F4F5] rounded border border-[#E4E4E7] transition-colors cursor-pointer"
+              title="Refresh Account Data"
+            >
+              <RefreshCw className="w-4 h-4" />
+            </button>
+          </div> */}
 
         {profileMessage ? (
           <div className="p-4 bg-amber-50 border border-amber-200 rounded text-xs text-amber-900 font-medium">
@@ -181,6 +176,54 @@ export const ProfilePage: React.FC = () => {
             </div>
           </div>
         )}
+      </div>
+      <div className="bg-white border border-[#E4E4E7] rounded-lg p-5">
+        <div className="mb-4">
+          <h4 className="text-sm font-bold text-[#18181B]">
+            Showroom Information
+          </h4>
+          <p className="text-xs text-[#71717A] mt-0.5">
+            Basic information about the registered showroom
+          </p>
+        </div>
+
+        <div className="space-y-3 text-xs">
+          <div className="flex items-center justify-between py-2 border-b border-[#F4F4F5]">
+            <span className="text-[#71717A]">Showroom Name</span>
+            <span className="font-semibold text-[#18181B]">
+              Grand Theft Autos
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between py-2 border-b border-[#F4F4F5]">
+            <span className="text-[#71717A]">Location</span>
+            <span className="font-semibold text-[#18181B]">
+              Mumbai, Maharashtra - 400001
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between py-2 border-b border-[#F4F4F5]">
+            <span className="text-[#71717A]">Established</span>
+            <span className="font-semibold text-[#18181B]">2026</span>
+          </div>
+
+          {/* <div className="flex items-center justify-between py-2 border-b border-[#F4F4F5]">
+            <span className="text-[#71717A]">Business Status</span>
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              ACTIVE
+            </span>
+          </div> */}
+
+          <div className="flex items-center justify-between py-2">
+            <span className="text-[#71717A]">Rating</span>
+
+            <span className="flex text-center items-center gap-1.5 px-2.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 text-[14px] font-bold">
+              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
+              4.9
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Customer Registration Modal for Manager / Owner */}

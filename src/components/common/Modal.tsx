@@ -1,6 +1,6 @@
-import React from 'react';
-import { X } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import React from "react";
+import { X } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 
 interface ModalProps {
   isOpen: boolean;
@@ -8,7 +8,7 @@ interface ModalProps {
   title: string;
   subtitle?: string;
   children: React.ReactNode;
-  maxWidth?: 'sm' | 'md' | 'lg' | 'xl';
+  maxWidth?: "sm" | "md" | "lg" | "xl";
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -17,13 +17,13 @@ export const Modal: React.FC<ModalProps> = ({
   title,
   subtitle,
   children,
-  maxWidth = 'md',
+  maxWidth = "md",
 }) => {
   const maxWidthClasses = {
-    sm: 'max-w-sm',
-    md: 'max-w-md',
-    lg: 'max-w-lg',
-    xl: 'max-w-xl',
+    sm: "max-w-sm",
+    md: "max-w-md",
+    lg: "max-w-lg",
+    xl: "max-w-xl",
   };
 
   return (
@@ -40,7 +40,9 @@ export const Modal: React.FC<ModalProps> = ({
             <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50/50 shrink-0">
               <div>
                 <h3 className="text-sm font-bold text-slate-900">{title}</h3>
-                {subtitle && <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
+                {subtitle && (
+                  <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>
+                )}
               </div>
               <button
                 onClick={onClose}
