@@ -371,10 +371,20 @@ export const CustomersPage: React.FC = () => {
                           <span className="font-bold text-slate-900">
                             {b.car?.company} {b.car?.model}
                           </span>
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          {b.bookingStatus == "CONFIRMED" ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              <ShieldCheck className="w-3 h-3" /> {"CONFIRMED"}
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-red-50 text-red-700 border border-red-200">
+                              <ShieldCheck className="w-3 h-3" />{" "}
+                              {b.bookingStatus}
+                            </span>
+                          )}
+                          {/* <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
                             <ShieldCheck className="w-3 h-3" />{" "}
                             {b.bookingStatus || "CONFIRMED"}
-                          </span>
+                          </span> */}
                         </div>
                         <div className="flex items-center justify-between text-[11px] text-slate-500 font-mono">
                           <span>Booking {b.id}</span>

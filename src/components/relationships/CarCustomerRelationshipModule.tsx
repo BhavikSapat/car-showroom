@@ -861,9 +861,15 @@ export const CarCustomerRelationshipModule: React.FC = () => {
               </div>
               <div className="flex justify-between items-center text-[11px] text-slate-600">
                 <span>Status:</span>
-                <span className="font-bold text-emerald-700">
-                  {viewingBooking.bookingStatus}
-                </span>
+                {viewingBooking.bookingStatus == "CONFIRMED" ? (
+                  <span className="font-bold text-emerald-700">
+                    {viewingBooking.bookingStatus}
+                  </span>
+                ) : (
+                  <span className="font-bold text-red-500">
+                    {viewingBooking.bookingStatus}
+                  </span>
+                )}
               </div>
             </div>
 
