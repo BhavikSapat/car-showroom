@@ -45,7 +45,6 @@ export const CarsModule: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Add / Edit Car Modal states
   const [isCarModalOpen, setIsCarModalOpen] = useState<boolean>(false);
   const [editingCar, setEditingCar] = useState<Car | null>(null);
   const [formData, setFormData] = useState({
@@ -62,14 +61,12 @@ export const CarsModule: React.FC = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  // Restock Modal states (OWNER role)
   const [isRestockModalOpen, setIsRestockModalOpen] = useState<boolean>(false);
   const [selectedCarForRestock, setSelectedCarForRestock] =
     useState<Car | null>(null);
   const [restockUnits, setRestockUnits] = useState<string>("5");
   const [isRestocking, setIsRestocking] = useState<boolean>(false);
 
-  // View Car Details Modal
   const [viewingCar, setViewingCar] = useState<Car | null>(null);
   const [availabilityMessage, setAvailabilityMessage] = useState<string | null>(
     null,
@@ -77,7 +74,6 @@ export const CarsModule: React.FC = () => {
   const [isCheckingAvailability, setIsCheckingAvailability] =
     useState<boolean>(false);
 
-  // Bulk Upload Modal states (POST /bulk)
   const [isBulkModalOpen, setIsBulkModalOpen] = useState<boolean>(false);
   const [bulkInput, setBulkInput] = useState<string>(`[
   {
@@ -113,7 +109,6 @@ export const CarsModule: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // Always fetch ALL cars for the showroom stock count
       const allRes = await carService.getAllCars();
 
       let allCars: Car[] = [];
@@ -157,7 +152,6 @@ export const CarsModule: React.FC = () => {
         });
       }
 
-      // IMPORTANT: count always comes from ALL cars
       const totalUnits = allCars.reduce(
         (sum, car) => sum + (car.quantity || 0),
         0,
@@ -165,7 +159,6 @@ export const CarsModule: React.FC = () => {
 
       setTotalCount(totalUnits);
 
-      // Now fetch only what should appear in the table
       let displayCars: Car[];
 
       if (statusFilter === "ALL") {
@@ -420,7 +413,6 @@ export const CarsModule: React.FC = () => {
     }
   };
 
-  // Extract filter options from current inventory
   const uniqueFuelTypes = Array.from(
     new Set([
       "Petrol",
@@ -472,7 +464,6 @@ export const CarsModule: React.FC = () => {
     setStatusFilter("ALL");
   };
 
-  // Filter cars based on all search and specification criteria
   const filteredCars = cars.filter((c) => {
     const matchesBrand =
       !searchBrand.trim() ||
@@ -515,7 +506,6 @@ export const CarsModule: React.FC = () => {
 
   return (
     <div className="space-y-4 font-sans">
-      {/* Top Metric Header Bar */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white p-4 border border-[#E4E4E7] rounded-lg">
           <div className="flex items-center justify-between">
@@ -565,7 +555,6 @@ export const CarsModule: React.FC = () => {
         </div>
       </div>
 
-      {/* Filters and Search */}
       <div className="bg-white border border-[#E4E4E7] rounded-lg p-4 space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
@@ -615,7 +604,6 @@ export const CarsModule: React.FC = () => {
           </div>
         </div>
 
-        {/* Primary Search Inputs: Brand & Model */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="relative">
             <input
@@ -640,7 +628,6 @@ export const CarsModule: React.FC = () => {
           </div>
         </div>
 
-        {/* Technical Specification Filters: Fuel, Transmission, Color, Year */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
           <div>
             <label className="block text-[10px] font-semibold uppercase text-slate-500 mb-1">
@@ -716,7 +703,6 @@ export const CarsModule: React.FC = () => {
         </div>
       </div>
 
-      {/* Showroom Cars Table */}
       <div className="bg-white border border-[#E4E4E7] rounded-lg overflow-hidden">
         <div className="px-5 py-4 border-b border-[#E4E4E7] flex items-center justify-between">
           <h3 className="text-xs font-semibold text-[#18181B] uppercase tracking-wider">
@@ -888,7 +874,6 @@ export const CarsModule: React.FC = () => {
         )}
       </div>
 
-      {/* Add / Edit Car Modal */}
       <Modal
         isOpen={isCarModalOpen}
         onClose={() => setIsCarModalOpen(false)}

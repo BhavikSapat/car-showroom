@@ -787,9 +787,6 @@ export const DashboardPage: React.FC<{
                 {availableCarCount + assignedCarCount}
               </strong>
             </span>
-            {/* <span className="text-emerald-600 font-semibold">
-              Live System Sync
-            </span> */}
           </div>
         </div>
 
