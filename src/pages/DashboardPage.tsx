@@ -215,10 +215,10 @@ export const DashboardPage: React.FC<{
           break;
         case "priceTier": {
           const price = Number(c.price) || 0;
-          if (price < 35000) key = "Under $35k";
-          else if (price < 65000) key = "$35k - $65k";
-          else if (price < 100000) key = "$65k - $100k";
-          else key = "Above $100k";
+          if (price < 35000) key = "Under ₹35k";
+          else if (price < 65000) key = "₹35k - ₹65k";
+          else if (price < 100000) key = "₹65k - ₹100k";
+          else key = "Above ₹1000k";
           break;
         }
         default:
@@ -651,7 +651,7 @@ export const DashboardPage: React.FC<{
                           <div className="flex justify-between gap-4 text-slate-600">
                             <span>Avg Vehicle Price:</span>
                             <span className="font-bold text-emerald-600 font-mono">
-                              ${data.avgPrice?.toLocaleString() || "N/A"}
+                              ₹{data.avgPrice?.toLocaleString() || "N/A"}
                             </span>
                           </div>
                         </div>

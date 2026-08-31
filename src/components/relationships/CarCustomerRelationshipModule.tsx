@@ -616,7 +616,7 @@ export const CarCustomerRelationshipModule: React.FC = () => {
                     >
                       {c.fuelType || "Petrol"} • {c.transmission || "Auto"} •{" "}
                       {c.color || "Standard"} • Year{" "}
-                      {c.manufacturingYear || 2024} • $
+                      {c.manufacturingYear || 2024} • ₹
                       {c.price ? c.price.toLocaleString() : "35,000"} — Stock:{" "}
                       {c.quantity || 0} unit(s)
                       {(c.quantity || 0) <= 0 ? " [OUT OF STOCK]" : ""}
@@ -673,7 +673,7 @@ export const CarCustomerRelationshipModule: React.FC = () => {
                   <div className="flex items-center gap-1 text-slate-700">
                     <Tag className="w-3 h-3 text-slate-400 shrink-0" />
                     <span>
-                      <strong>Price:</strong> $
+                      <strong>Price:</strong> ₹
                       {selectedCarDetails.price?.toLocaleString()}
                     </span>
                   </div>
@@ -746,7 +746,7 @@ export const CarCustomerRelationshipModule: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div>
                     <label className="block text-[11px] font-medium text-slate-700 mb-1">
-                      Premium Amount ($)
+                      Premium Amount (₹)
                     </label>
                     <input
                       type="number"
@@ -893,7 +893,7 @@ export const CarCustomerRelationshipModule: React.FC = () => {
                 <p>
                   Amount:{" "}
                   <span className="font-mono font-bold">
-                    ${viewingBooking.insuranceAmount}
+                    ₹{viewingBooking.insuranceAmount}
                   </span>
                 </p>
                 <p>

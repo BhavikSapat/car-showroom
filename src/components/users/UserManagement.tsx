@@ -258,7 +258,7 @@ export const UserManagement: React.FC = () => {
                 {users.map((u, idx) => (
                   <tr
                     key={idx}
-                    className="hover:bg-[#F9FAFB] transition-colors"
+                    className="group-hover:bg-[#F9FAFB] transition-colors"
                   >
                     {/* Account ID */}
                     <td className="px-6 py-4 font-mono text-xs text-[#71717A]">
@@ -408,7 +408,7 @@ export const UserManagement: React.FC = () => {
             >
               <option value="MANAGER">MANAGER</option>
 
-              {/* <option value="OWNER">OWNER</option> */}
+              <option value="OWNER">OWNER</option>
             </select>
           </div>
 

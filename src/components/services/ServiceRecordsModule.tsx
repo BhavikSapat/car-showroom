@@ -27,6 +27,8 @@ import { Modal } from "../common/Modal";
 
 export const ServiceRecordsModule: React.FC = () => {
   const { role } = useAuth();
+
+  // OWNER and MANAGER can schedule and complete services
   const isManagerOrOwner = role === "OWNER" || role === "MANAGER";
 
   const [services, setServices] = useState<ServiceRecord[]>([]);
@@ -37,18 +39,25 @@ export const ServiceRecordsModule: React.FC = () => {
 
   // Create Service Modal
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
+
   const [selectedBookingId, setSelectedBookingId] = useState<string>("");
+
   const [serviceNumber, setServiceNumber] = useState<string>("1");
+
   const [serviceType, setServiceType] = useState<string>(
     "General Maintenance & Oil Change",
   );
+
   const [scheduledDate, setScheduledDate] = useState<string>(
     new Date().toISOString().split("T")[0],
   );
+
   const [cost, setCost] = useState<string>("250");
+
   const [remarks, setRemarks] = useState<string>(
     "Routine periodic service inspection.",
   );
+
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   // View Details Modal
@@ -58,8 +67,13 @@ export const ServiceRecordsModule: React.FC = () => {
 
   const toast = useToast();
 
+  // ============================================================
+  // LOAD DATA
+  // ============================================================
+
   const loadData = async () => {
     setIsLoading(true);
+
     try {
       const [servicesRes, bookingsRes] = await Promise.all([
         serviceRecordService.getAllServices().catch(() => []),
@@ -67,6 +81,7 @@ export const ServiceRecordsModule: React.FC = () => {
       ]);
 
       setServices(Array.isArray(servicesRes) ? servicesRes : []);
+
       setBookings(Array.isArray(bookingsRes) ? bookingsRes : []);
     } catch (err: any) {
       toast.error("Failed to load service records", err.message);
@@ -79,25 +94,36 @@ export const ServiceRecordsModule: React.FC = () => {
     loadData();
   }, []);
 
+  // ============================================================
+  // SEARCH BY BOOKING ID
+  // ============================================================
+
   const handleSearchByBookingId = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!filterBookingId.trim()) {
       return loadData();
     }
 
     const bId = parseInt(filterBookingId, 10);
+
     if (isNaN(bId)) {
       toast.error("Invalid Input", "Please enter a valid numeric Booking ID.");
       return;
     }
 
     setIsLoading(true);
+
     try {
       const res = await serviceRecordService.getServicesByBooking(bId);
+
       setServices(Array.isArray(res) ? res : []);
+
       toast.success(
         "Query Complete",
-        `Found ${Array.isArray(res) ? res.length : 0} record(s) for Booking ${bId}`,
+        `Found ${
+          Array.isArray(res) ? res.length : 0
+        } record(s) for Booking ${bId}`,
       );
     } catch (err: any) {
       toast.error("Query Failed", err.message);
@@ -106,23 +132,39 @@ export const ServiceRecordsModule: React.FC = () => {
     }
   };
 
+  // ============================================================
+  // OPEN CREATE SERVICE MODAL
+  // ============================================================
+
   const handleOpenCreateModal = () => {
     if (bookings.length > 0) {
       setSelectedBookingId(String(bookings[0].id || ""));
     } else {
       setSelectedBookingId("");
     }
+
     setServiceNumber("1");
+
     setServiceType("General Maintenance & Oil Change");
+
     setScheduledDate(new Date().toISOString().split("T")[0]);
+
     setCost("250");
+
     setRemarks("Routine periodic service inspection.");
+
     setIsCreateModalOpen(true);
   };
 
+  // ============================================================
+  // CREATE SERVICE
+  // ============================================================
+
   const handleCreateService = async (e: React.FormEvent) => {
     e.preventDefault();
+
     const bId = parseInt(selectedBookingId, 10);
+
     if (isNaN(bId)) {
       toast.error(
         "Missing Booking",
@@ -137,9 +179,12 @@ export const ServiceRecordsModule: React.FC = () => {
     }
 
     setIsSubmitting(true);
+
     try {
       const payload = {
-        booking: { id: bId },
+        booking: {
+          id: bId,
+        },
         serviceNumber: parseInt(serviceNumber, 10) || 1,
         serviceType: serviceType.trim(),
         scheduledDate,
@@ -149,6 +194,7 @@ export const ServiceRecordsModule: React.FC = () => {
       };
 
       const res = await serviceRecordService.addService(payload);
+
       if (
         typeof res === "string" &&
         (res.includes("Not Found") ||
@@ -161,7 +207,9 @@ export const ServiceRecordsModule: React.FC = () => {
           "Service Scheduled",
           `Service ticket logged for Booking ${bId}.`,
         );
+
         setIsCreateModalOpen(false);
+
         loadData();
       }
     } catch (err: any) {
@@ -174,9 +222,14 @@ export const ServiceRecordsModule: React.FC = () => {
     }
   };
 
+  // ============================================================
+  // MARK SERVICE COMPLETE
+  // ============================================================
+
   const handleMarkComplete = async (serviceId: number) => {
     try {
       const res = await serviceRecordService.markServiceComplete(serviceId);
+
       if (
         typeof res === "string" &&
         (res.includes("Not Found") || res.includes("Access Denied"))
@@ -187,6 +240,7 @@ export const ServiceRecordsModule: React.FC = () => {
           "Service Completed",
           `Service ticket ${serviceId} marked as completed.`,
         );
+
         loadData();
       }
     } catch (err: any) {
@@ -194,20 +248,109 @@ export const ServiceRecordsModule: React.FC = () => {
     }
   };
 
+  // ============================================================
+  // COMPLETE BUTTON VISIBILITY
+  // ============================================================
+
+  /**
+   * The service date does NOT restrict completion.
+   *
+   * Complete button is available for:
+   *
+   * - Past service dates
+   * - Today's service date
+   * - Future service dates
+   * - Any number of days before the service
+   * - Any number of days after the service
+   *
+   * The ONLY condition that prevents completion is:
+   *
+   * - Service is already COMPLETED
+   * - Service has no valid ID
+   *
+   * OWNER / MANAGER permission is checked separately
+   * using `isManagerOrOwner`.
+   */
+  const canMarkComplete = (service: ServiceRecord): boolean => {
+    // Must have a valid service ID
+    if (!service.id) {
+      return false;
+    }
+
+    // Already completed -> don't show Complete button
+    if (service.status === "COMPLETED") {
+      return false;
+    }
+
+    // Service date is required
+    if (!service.scheduledDate) {
+      return false;
+    }
+
+    /**
+     * Today's date.
+     * We use local date components instead of toISOString()
+     * to avoid timezone shifting.
+     */
+    const today = new Date();
+
+    const todayStart = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+    );
+    const scheduledDateString = service.scheduledDate.split("T")[0];
+
+    const [year, month, day] = scheduledDateString.split("-").map(Number);
+
+    if (!year || !month || !day || isNaN(year) || isNaN(month) || isNaN(day)) {
+      return false;
+    }
+
+    const scheduledDate = new Date(year, month - 1, day);
+
+    const allowedStartDate = new Date(scheduledDate);
+
+    allowedStartDate.setDate(allowedStartDate.getDate() - 2);
+
+    /**
+     * No upper limit.
+     *
+     * Once we reach 2 days before the service date,
+     * Complete remains available forever until the
+     * service is marked COMPLETED.
+     */
+    return todayStart >= allowedStartDate;
+  };
+  // ============================================================
+  // FILTER SERVICES
+  // ============================================================
+
   const filteredServices = services.filter((s) => {
-    if (statusFilter === "ALL") return true;
+    if (statusFilter === "ALL") {
+      return true;
+    }
+
     return s.status === statusFilter;
   });
 
+  // ============================================================
+  // UI
+  // ============================================================
+
   return (
     <div className="space-y-4 font-sans">
-      {/* Header bar */}
+      {/* ======================================================
+          HEADER
+      ====================================================== */}
+
       <div className="bg-white border border-[#E4E4E7] rounded-lg p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h3 className="text-sm font-semibold text-[#18181B] flex items-center gap-2">
             <Wrench className="w-4 h-4 text-black" />
             Vehicle Service & Maintenance Records
           </h3>
+
           <p className="text-xs text-[#71717A] mt-0.5">
             Schedule vehicle maintenance, track service histories, and mark
             service orders as completed.
@@ -220,12 +363,16 @@ export const ServiceRecordsModule: React.FC = () => {
             className="px-4 py-2 text-xs font-bold text-white bg-black hover:bg-[#27272A] rounded-md transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-xs shrink-0"
           >
             <Plus className="w-4 h-4" />
+
             <span>Schedule New Service</span>
           </button>
         )}
       </div>
 
-      {/* Filter and Search Bar */}
+      {/* ======================================================
+          FILTER AND SEARCH
+      ====================================================== */}
+
       <div className="bg-white border border-[#E4E4E7] rounded-lg p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         <form
           onSubmit={handleSearchByBookingId}
@@ -239,14 +386,17 @@ export const ServiceRecordsModule: React.FC = () => {
               onChange={(e) => setFilterBookingId(e.target.value)}
               className="w-full pl-8 pr-3 py-2 text-xs border border-[#E4E4E7] rounded bg-white text-[#18181B] focus:ring-1 focus:ring-black outline-none font-mono"
             />
+
             <Search className="w-3.5 h-3.5 text-[#71717A] absolute left-2.5 top-2.5" />
           </div>
+
           <button
             type="submit"
             className="px-3 py-2 text-xs font-semibold text-white bg-black rounded hover:bg-[#27272A] cursor-pointer"
           >
             Filter
           </button>
+
           {filterBookingId && (
             <button
               type="button"
@@ -272,6 +422,7 @@ export const ServiceRecordsModule: React.FC = () => {
           >
             All ({services.length})
           </button>
+
           <button
             onClick={() => setStatusFilter("SCHEDULED")}
             className={`px-2.5 py-1 rounded text-[11px] font-semibold transition-colors cursor-pointer ${
@@ -282,6 +433,7 @@ export const ServiceRecordsModule: React.FC = () => {
           >
             Scheduled
           </button>
+
           <button
             onClick={() => setStatusFilter("COMPLETED")}
             className={`px-2.5 py-1 rounded text-[11px] font-semibold transition-colors cursor-pointer ${
@@ -295,17 +447,22 @@ export const ServiceRecordsModule: React.FC = () => {
         </div>
       </div>
 
-      {/* Services Table */}
+      {/* ======================================================
+          SERVICES TABLE
+      ====================================================== */}
+
       <div className="bg-white border border-[#E4E4E7] rounded-lg overflow-hidden">
         <div className="px-5 py-4 border-b border-[#E4E4E7] flex items-center justify-between">
           <h4 className="text-xs font-semibold text-[#18181B] uppercase tracking-wider">
             Service Logs ({filteredServices.length} records)
           </h4>
+
           <button
             onClick={loadData}
             className="text-xs text-[#71717A] hover:text-[#18181B] flex items-center gap-1 font-medium cursor-pointer"
           >
-            <RefreshCcw className="w-3.5 h-3.5" /> Refresh
+            <RefreshCcw className="w-3.5 h-3.5" />
+            Refresh
           </button>
         </div>
 
@@ -314,7 +471,9 @@ export const ServiceRecordsModule: React.FC = () => {
         ) : filteredServices.length === 0 ? (
           <div className="py-12 text-center text-xs text-[#71717A] space-y-2">
             <Wrench className="w-8 h-8 text-slate-300 mx-auto" />
+
             <p>No service records found.</p>
+
             {isManagerOrOwner && (
               <button
                 onClick={handleOpenCreateModal}
@@ -330,29 +489,49 @@ export const ServiceRecordsModule: React.FC = () => {
               <thead className="bg-[#F9FAFB] text-[10px] font-semibold text-[#71717A] uppercase tracking-wider border-b border-[#E4E4E7]">
                 <tr>
                   <th className="px-5 py-3">Service ID</th>
+
                   <th className="px-5 py-3">Customer / Vehicle</th>
+
                   <th className="px-5 py-3">Service Type</th>
+
                   <th className="px-5 py-3">Scheduled Date</th>
+
                   <th className="px-5 py-3">Completed Date</th>
+
                   <th className="px-5 py-3">Cost (₹)</th>
+
                   <th className="px-5 py-3">Status</th>
+
                   <th className="px-5 py-3 text-right">Actions</th>
                 </tr>
               </thead>
+
               <tbody className="divide-y divide-[#F4F4F5] text-sm">
                 {filteredServices.map((s, idx) => {
                   const isDone = s.status === "COMPLETED";
+
+                  /**
+                   * OWNER / MANAGER + not completed
+                   * = Complete button visible.
+                   *
+                   * Service date does not matter.
+                   */
+                  const showCompleteButton =
+                    isManagerOrOwner && canMarkComplete(s);
+
                   return (
                     <tr
                       key={idx}
                       className="hover:bg-[#F9FAFB] transition-colors"
                     >
+                      {/* SERVICE ID */}
                       <td className="px-5 py-3.5 text-xs text-slate-500 font-mono">
                         {idx + 1}
                       </td>
+
+                      {/* CUSTOMER / VEHICLE */}
                       <td className="px-5 py-3.5 text-xs">
                         <div className="font-bold text-slate-900 flex items-center gap-1.5">
-                          {/* <User className="w-3.5 h-3.5 text-slate-500" /> */}
                           {s.booking?.customer?.name || "N/A"}
                         </div>
 
@@ -362,23 +541,34 @@ export const ServiceRecordsModule: React.FC = () => {
                           </div>
                         )}
                       </td>
+
+                      {/* SERVICE TYPE */}
                       <td className="px-5 py-3.5 text-xs font-semibold text-[#18181B]">
                         {s.serviceType}
+
                         {s.remarks && (
                           <span className="block text-[11px] text-slate-500 font-normal truncate max-w-xs">
                             {s.remarks}
                           </span>
                         )}
                       </td>
+
+                      {/* SCHEDULED DATE */}
                       <td className="px-5 py-3.5 text-xs text-slate-600 font-mono">
                         {s.scheduledDate || "N/A"}
                       </td>
+
+                      {/* COMPLETED DATE */}
                       <td className="px-5 py-3.5 text-xs text-slate-600 font-mono">
                         {s.completedDate || "—"}
                       </td>
+
+                      {/* COST */}
                       <td className="px-5 py-3.5 text-xs font-mono font-bold text-slate-900">
                         ₹{s.cost ? Number(s.cost).toLocaleString() : "0"}
                       </td>
+
+                      {/* STATUS */}
                       <td className="px-5 py-3.5 text-xs">
                         <span
                           className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[10px] font-bold font-mono ${
@@ -392,11 +582,15 @@ export const ServiceRecordsModule: React.FC = () => {
                           ) : (
                             <Clock className="w-3 h-3" />
                           )}
-                          {s.status || "SCHEDULED"}
+
+                          {isDone ? "COMPLETED" : s.status || "SCHEDULED"}
                         </span>
                       </td>
+
+                      {/* ACTIONS */}
                       <td className="px-5 py-3.5 text-right">
                         <div className="flex justify-end items-center gap-2">
+                          {/* VIEW DETAILS */}
                           <button
                             onClick={() => setViewingRecord(s)}
                             className="p-1 text-slate-600 hover:text-black border border-slate-200 rounded hover:bg-slate-50 cursor-pointer"
@@ -404,13 +598,16 @@ export const ServiceRecordsModule: React.FC = () => {
                           >
                             <Eye className="w-3.5 h-3.5" />
                           </button>
-                          {isManagerOrOwner && !isDone && s.id && (
+
+                          {/* COMPLETE */}
+                          {showCompleteButton && s.id && (
                             <button
                               onClick={() => handleMarkComplete(s.id!)}
                               className="px-2.5 py-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded cursor-pointer inline-flex items-center gap-1"
-                              title="Mark Service as Completed (PUT /service/{id}/complete)"
+                              title="Mark Service as Completed"
                             >
-                              <Check className="w-3 h-3" /> Complete
+                              <Check className="w-3 h-3" />
+                              Complete
                             </button>
                           )}
                         </div>
@@ -424,7 +621,10 @@ export const ServiceRecordsModule: React.FC = () => {
         )}
       </div>
 
-      {/* Schedule Service Modal */}
+      {/* ======================================================
+          SCHEDULE SERVICE MODAL
+      ====================================================== */}
+
       <Modal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
@@ -432,10 +632,12 @@ export const ServiceRecordsModule: React.FC = () => {
         subtitle="Log service order."
       >
         <form onSubmit={handleCreateService} className="space-y-3.5 text-xs">
+          {/* BOOKING */}
           <div>
             <label className="block text-xs font-semibold text-[#18181B] mb-1">
               Select Booking Reference *
             </label>
+
             <select
               value={selectedBookingId}
               onChange={(e) => setSelectedBookingId(e.target.value)}
@@ -456,11 +658,13 @@ export const ServiceRecordsModule: React.FC = () => {
             </select>
           </div>
 
+          {/* SERVICE NUMBER + COST */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-[#18181B] mb-1">
                 Service Number / Round
               </label>
+
               <input
                 type="number"
                 min="1"
@@ -475,6 +679,7 @@ export const ServiceRecordsModule: React.FC = () => {
               <label className="block text-xs font-semibold text-[#18181B] mb-1">
                 Estimated Cost ($)
               </label>
+
               <input
                 type="number"
                 min="0"
@@ -486,10 +691,12 @@ export const ServiceRecordsModule: React.FC = () => {
             </div>
           </div>
 
+          {/* SERVICE TYPE */}
           <div>
             <label className="block text-xs font-semibold text-[#18181B] mb-1">
               Service Type *
             </label>
+
             <input
               type="text"
               placeholder="e.g. 10,000 km Oil & Filter Change, Brake Inspection"
@@ -501,10 +708,12 @@ export const ServiceRecordsModule: React.FC = () => {
             />
           </div>
 
+          {/* SCHEDULED DATE */}
           <div>
             <label className="block text-xs font-semibold text-[#18181B] mb-1">
               Scheduled Date *
             </label>
+
             <input
               type="date"
               value={scheduledDate}
@@ -515,10 +724,12 @@ export const ServiceRecordsModule: React.FC = () => {
             />
           </div>
 
+          {/* REMARKS */}
           <div>
             <label className="block text-xs font-semibold text-[#18181B] mb-1">
               Remarks & Technical Notes
             </label>
+
             <textarea
               rows={2}
               value={remarks}
@@ -529,6 +740,7 @@ export const ServiceRecordsModule: React.FC = () => {
             />
           </div>
 
+          {/* MODAL ACTIONS */}
           <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E4E4E7]">
             <button
               type="button"
@@ -538,6 +750,7 @@ export const ServiceRecordsModule: React.FC = () => {
             >
               Cancel
             </button>
+
             <button
               type="submit"
               disabled={isSubmitting}
@@ -546,6 +759,7 @@ export const ServiceRecordsModule: React.FC = () => {
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
+
                   <span>Scheduling...</span>
                 </>
               ) : (
@@ -556,7 +770,10 @@ export const ServiceRecordsModule: React.FC = () => {
         </form>
       </Modal>
 
-      {/* View Record Modal */}
+      {/* ======================================================
+          VIEW RECORD MODAL
+      ====================================================== */}
+
       <Modal
         isOpen={!!viewingRecord}
         onClose={() => setViewingRecord(null)}
@@ -565,45 +782,69 @@ export const ServiceRecordsModule: React.FC = () => {
       >
         {viewingRecord && (
           <div className="space-y-4 text-xs">
+            {/* SERVICE TASK */}
             <div className="p-3 bg-slate-50 border border-slate-200 rounded-md space-y-1">
               <span className="text-[10px] uppercase font-bold text-slate-500">
                 Service Task
               </span>
+
               <h4 className="text-base font-bold text-slate-900">
                 {viewingRecord.serviceType}
               </h4>
+
               <p className="text-slate-600">
                 {viewingRecord.remarks || "No remarks logged."}
               </p>
             </div>
 
+            {/* SERVICE DETAILS */}
             <div className="grid grid-cols-2 gap-2 border-t border-b border-slate-100 py-3">
+              {/* BOOKING REF */}
               <div className="flex justify-between py-1 border-b border-slate-50">
                 <span className="text-slate-500">Booking Ref:</span>
+
                 <span className="font-mono font-bold text-slate-900">
                   {viewingRecord.booking?.id}
                 </span>
               </div>
+
+              {/* STATUS */}
               <div className="flex justify-between py-1 border-b border-slate-50">
                 <span className="text-slate-500">Status:</span>
-                <span className="font-bold text-emerald-700">
+
+                <span
+                  className={`font-bold ${
+                    viewingRecord.status === "COMPLETED"
+                      ? "text-emerald-700"
+                      : "text-amber-700"
+                  }`}
+                >
                   {viewingRecord.status}
                 </span>
               </div>
+
+              {/* SCHEDULED */}
               <div className="flex justify-between py-1 border-b border-slate-50">
                 <span className="text-slate-500">Scheduled:</span>
+
                 <span className="font-mono text-slate-900">
                   {viewingRecord.scheduledDate || "N/A"}
                 </span>
               </div>
+
+              {/* COMPLETED */}
               <div className="flex justify-between py-1 border-b border-slate-50">
                 <span className="text-slate-500">Completed:</span>
+
                 <span className="font-mono text-slate-900">
                   {viewingRecord.completedDate || "Pending"}
                 </span>
               </div>
+
+              {/* COST */}
               <div className="flex justify-between py-1">
                 <span className="text-slate-500">Cost:</span>
+
                 <span className="font-mono font-bold text-slate-900">
                   ₹
                   {viewingRecord.cost
@@ -611,14 +852,18 @@ export const ServiceRecordsModule: React.FC = () => {
                     : "0"}
                 </span>
               </div>
+
+              {/* ROUND */}
               <div className="flex justify-between py-1">
                 <span className="text-slate-500">Round:</span>
+
                 <span className="font-mono text-slate-900">
                   Service {viewingRecord.serviceNumber || 1}
                 </span>
               </div>
             </div>
 
+            {/* CLOSE */}
             <div className="pt-2">
               <button
                 type="button"

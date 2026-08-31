@@ -53,14 +53,14 @@ export const CustomerSearchFilter: React.FC<CustomerSearchFilterProps> = ({
             onChange={(e) => setMode(e.target.value as SearchMode)}
             className="w-full md:w-56 px-3 py-2 text-xs font-medium text-[#18181B] bg-white border border-[#E4E4E7] rounded focus:ring-1 focus:ring-black outline-none"
           >
-            <option value="all">All Customers (Paged)</option>
-            <option value="search_id">Search by ID (/customer/search/id)</option>
-            <option value="search_name">Search by Name (/customer/search/name)</option>
-            <option value="search_email">Search by Email (/customer/search/email)</option>
-            <option value="filter_name">Filter by Name (/customer/filter/name)</option>
-            <option value="filter_email">Filter by Email (/customer/filter/email)</option>
-            <option value="query_name">Query by Name (/customer/query/name)</option>
-            <option value="query_email">All Emails Query (/customer/query/email)</option>
+            <option value="all">All Customers</option>
+            {/* <option value="search_id">Search by ID</option> */}
+            <option value="search_name">Search by Name</option>
+            <option value="search_email">Search by Email</option>
+            <option value="filter_name">Filter by Name</option>
+            <option value="filter_email">Filter by Email</option>
+            {/* <option value="query_name">Query by Name</option> */}
+            {/* <option value="query_email">All Emails Query</option> */}
           </select>
         </div>
 
@@ -68,9 +68,7 @@ export const CustomerSearchFilter: React.FC<CustomerSearchFilterProps> = ({
         {mode !== "all" && mode !== "query_email" && (
           <div className="flex-1">
             <label className="block text-[10px] uppercase font-semibold text-[#71717A] tracking-wider mb-1">
-              {mode.includes("id")
-                ? "Customer ID"
-                : "Search Value"}
+              {mode.includes("id") ? "Customer ID" : "Search Value"}
             </label>
             <div className="relative">
               <input

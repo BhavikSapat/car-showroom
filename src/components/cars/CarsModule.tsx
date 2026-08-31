@@ -564,7 +564,7 @@ export const CarsModule: React.FC = () => {
             {hasActiveFilters && (
               <button
                 onClick={clearAllFilters}
-                className="text-[10px] text-rose-600 hover:text-rose-800 font-semibold underline cursor-pointer"
+                className="text-[10px] text-rose-600 hover:text-rose-800 font-semibold cursor-pointer border border-red-200 rounded-md px-2 py-1 "
               >
                 Clear All Filters
               </button>
@@ -1110,7 +1110,8 @@ export const CarsModule: React.FC = () => {
         isOpen={isRestockModalOpen}
         onClose={() => setIsRestockModalOpen(false)}
         title="Restock Vehicle Inventory"
-        subtitle="Add additional stock units via PUT /car/{carId}/restock"
+        subtitle="Add additional stock units.
+        "
       >
         {selectedCarForRestock && (
           <form onSubmit={handleRestockSubmit} className="space-y-4 text-xs">
